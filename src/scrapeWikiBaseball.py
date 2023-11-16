@@ -11,12 +11,13 @@ to do:
 
 
 #wikipedia package
+from typing import Iterable
 import wikipedia
 import time
 import re
-import pandas as pd
+# import pandas as pd
 import datetime
-import numpy as np
+# import numpy as np
 
 months = ['zero','January','February','March',
           'April','May','June','July','August',
@@ -33,12 +34,10 @@ months = ['zero','January','February','March',
 #Now it takes a long time to run these full page pulls....
 
     
-def scrape_and_save(page,bad_words,my_data):
-    my_page = wikipedia.page(page)
-    list_o_links = my_page.links
-    
-    #print(list_o_links)
-    good_candidates = []
+def scrape_and_save(page: str, bad_words: list[str]) -> Iterable[str]:
+    my_page: wikipedia.WikipediaPage = wikipedia.page(page)
+    list_o_links: list[str] = my_page.links
+
     #here's some initial cleaning to trim down the list of names
     for i in list_o_links:
         if i[0].isnumeric():
@@ -61,16 +60,14 @@ def scrape_and_save(page,bad_words,my_data):
             #one word generally isn't a name and anything with more than 3 is rare
             continue
         
-        good_candidates.append(i)
+        yield i
     
     
+def processCandidates(candidates: list[str], my_data):
+
     counter = 0
     
-    
-    
-    
-    
-    for i in good_candidates:
+    for i in candidates:
     
         #alright here's my assumption: if it's a persons page there should be a
         #parenthesis after their name (now keep in mind some folks also have their
@@ -222,37 +219,41 @@ def scrape_and_save(page,bad_words,my_data):
 
 
 
-pages = ["List of Members Baseball Hall of Fame",
-         "List of Members Hockey Hall of Fame",
-         "List of Members Football Hall of Fame",
-         "List of People with the Most Children"]
+if __name__ == '__main__':
 
-headers = ['Name','Birth Month','Birth Day','Birth Year','Death Month','Death Day','Death Year','BirthDeathBool','Age','BirthdayDeath']
+    pages = ["List of Members Baseball Hall of Fame",
+            "List of Members Hockey Hall of Fame",
+            "List of Members Football Hall of Fame",
+            "List of People with the Most Children"]
 
-
-bad_words = ["Chicago","AFL","AFC","National","American","Academy"]
-
-#Weird note: When you loop through page values, if you don't do "pages[3:]"
-#Or something that results in a vector, it will run but with like weird meta links
-
-#Still need to figure out how to save all this data
-my_data  = pd.DataFrame(columns=headers)
-for page in pages[3:]:
-    my_data = scrape_and_save(page,bad_words,my_data)
+    headers = ['Name','Birth Month','Birth Day','Birth Year','Death Month','Death Day','Death Year','BirthDeathBool','Age','BirthdayDeath']
 
 
-#I think it's also kinda fun to see who died before their birthday earliest in the year
-#and who lived past it latest in the year.  
+    bad_words = ["Chicago","AFL","AFC","National","American","Academy"]
+
+    #Weird note: When you loop through page values, if you don't do "pages[3:]"
+    #Or something that results in a vector, it will run but with like weird meta links
+
+    #Still need to figure out how to save all this data
 
 
-#We'll calculate the "delta" i.e. how close people died to their birthday
+    # my_data  = pd.DataFrame(columns=headers)
+    # for page in pages[3:]:
+    #     my_data = scrape_and_save(page,bad_words,my_data)
 
-#This vectorize function seems worth learning better.  
-my_data['birthdate'] = np.vectorize(lambda x,y,z: datetime.date(month=x,day=y,year=z))(my_data['Birth Month'],my_data['Birth Day'],my_data['Birth Year'])
-my_data['deathdate'] = np.vectorize(lambda x,y,z: datetime.date(month=x,day=y,year=z))(my_data['Death Month'],my_data['Death Day'],my_data['Death Year'])
-my_data['birthday_death_year']  = np.vectorize(lambda x,y,z: datetime.date(month=x,day=y,year=z))(my_data['Birth Month'],my_data['Birth Day'],my_data['Death Year'])
 
-my_data['delta'] = my_data['deathdate'] - my_data['birthday_death_year']
+    #I think it's also kinda fun to see who died before their birthday earliest in the year
+    #and who lived past it latest in the year.  
+
+
+    #We'll calculate the "delta" i.e. how close people died to their birthday
+
+    #This vectorize function seems worth learning better.  
+    # my_data['birthdate'] = np.vectorize(lambda x,y,z: datetime.date(month=x,day=y,year=z))(my_data['Birth Month'],my_data['Birth Day'],my_data['Birth Year'])
+    # my_data['deathdate'] = np.vectorize(lambda x,y,z: datetime.date(month=x,day=y,year=z))(my_data['Death Month'],my_data['Death Day'],my_data['Death Year'])
+    # my_data['birthday_death_year']  = np.vectorize(lambda x,y,z: datetime.date(month=x,day=y,year=z))(my_data['Birth Month'],my_data['Birth Day'],my_data['Death Year'])
+
+    # my_data['delta'] = my_data['deathdate'] - my_data['birthday_death_year']
 
 
 
