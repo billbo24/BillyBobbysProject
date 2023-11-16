@@ -37,7 +37,7 @@ def scrape_and_save(page,bad_words,my_data):
     my_page = wikipedia.page(page)
     list_o_links = my_page.links
     
-
+    #print(list_o_links)
     good_candidates = []
     #here's some initial cleaning to trim down the list of names
     for i in list_o_links:
@@ -224,15 +224,20 @@ def scrape_and_save(page,bad_words,my_data):
 
 pages = ["List of Members Baseball Hall of Fame",
          "List of Members Hockey Hall of Fame",
-         "List of Members Football Hall of Fame"]
+         "List of Members Football Hall of Fame",
+         "List of People with the Most Children"]
 
 headers = ['Name','Birth Month','Birth Day','Birth Year','Death Month','Death Day','Death Year','BirthDeathBool','Age','BirthdayDeath']
 
 
 bad_words = ["Chicago","AFL","AFC","National","American","Academy"]
 
+#Weird note: When you loop through page values, if you don't do "pages[3:]"
+#Or something that results in a vector, it will run but with like weird meta links
+
+#Still need to figure out how to save all this data
 my_data  = pd.DataFrame(columns=headers)
-for page in pages[1:2]:
+for page in pages[3:]:
     my_data = scrape_and_save(page,bad_words,my_data)
 
 
@@ -248,3 +253,14 @@ my_data['deathdate'] = np.vectorize(lambda x,y,z: datetime.date(month=x,day=y,ye
 my_data['birthday_death_year']  = np.vectorize(lambda x,y,z: datetime.date(month=x,day=y,year=z))(my_data['Birth Month'],my_data['Birth Day'],my_data['Death Year'])
 
 my_data['delta'] = my_data['deathdate'] - my_data['birthday_death_year']
+
+
+
+
+
+
+
+
+
+
+
