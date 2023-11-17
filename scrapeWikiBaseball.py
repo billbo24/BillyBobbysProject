@@ -64,12 +64,7 @@ def scrape_and_save(page,bad_words,my_data,dead_person_cap =-1):
         
         good_candidates.append(i)
     
-    
     counter = 0
-    
-    
-    
-    
     
     for i in good_candidates:
     
