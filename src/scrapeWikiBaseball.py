@@ -33,10 +33,12 @@ months = ['zero','January','February','March',
 
 #Now it takes a long time to run these full page pulls....
 
-    
-def scrape_and_save(page: str, bad_words: list[str]) -> Iterable[str]:
+def get_links(page: str) -> list[str]:
     my_page: wikipedia.WikipediaPage = wikipedia.page(page)
-    list_o_links: list[str] = my_page.links
+    return my_page.links
+
+    
+def get_names_from_links(list_o_links: list[str], bad_words: set[str]) -> Iterable[str]:
 
     #here's some initial cleaning to trim down the list of names
     for i in list_o_links:
@@ -54,13 +56,83 @@ def scrape_and_save(page: str, bad_words: list[str]) -> Iterable[str]:
         if "(" in i:
             continue
         
-        words = i.split()
-        
         if len(words) == 1 or len(words) > 3:
             #one word generally isn't a name and anything with more than 3 is rare
             continue
         
         yield i
+
+
+## For my own curiousity testing the speed of the get links if I call a function every iteration
+
+def get_names_from_links_test_function(list_o_links: list[str], bad_words: list[str]) -> Iterable[str]:
+
+    for link in list_o_links:
+        if validate_name(link, bad_words):
+            yield link
+
+
+def validate_name(i: str, bad_words: list[str]) -> bool:
+
+    #here's some initial cleaning to trim down the list of names
+    if i[0].isnumeric():
+        return False
+        
+    #a ton of stuff begins with a single character.  These cant be names
+    if i[1] == " ":
+        return False
+    
+    words = i.split()
+    if words[0] in bad_words:
+        return False
+    
+    if "(" in i:
+        return False
+    
+    words = i.split()
+    
+    if len(words) == 1 or len(words) > 3:
+        #one word generally isn't a name and anything with more than 3 is rare
+        return False
+    
+    return True
+
+class ValidateNames:
+
+    def __init__(self, bad_words: list[str]) -> None:
+        self.bad_words = bad_words
+
+    def get_names(self, list_o_links: list[str]) -> Iterable[str]:
+
+        for link in list_o_links:
+            if self.validate_name(link):
+                yield link
+
+    def validate_name(self, i: str) -> bool:
+
+        #here's some initial cleaning to trim down the list of names
+        if i[0].isnumeric():
+            return False
+            
+        #a ton of stuff begins with a single character.  These cant be names
+        if i[1] == " ":
+            return False
+        
+        words = i.split()
+        if words[0] in self.bad_words:
+            return False
+        
+        if "(" in i:
+            return False
+        
+        words = i.split()
+        
+        if len(words) == 1 or len(words) > 3:
+            #one word generally isn't a name and anything with more than 3 is rare
+            return False
+        
+        return True
+
     
     
 def processCandidates(candidates: list[str], my_data):
