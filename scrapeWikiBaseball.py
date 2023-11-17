@@ -32,10 +32,11 @@ months = ['zero','January','February','March',
 
 #Now it takes a long time to run these full page pulls....
 
-    
-def scrape_and_save(page,bad_words,my_data):
+def scrape_and_save(page,bad_words,my_data,dead_person_cap =-1):
     my_page = wikipedia.page(page)
     list_o_links = my_page.links
+
+    dead_people_found = 0 #scraping takes awhile so while were testing set a limit on the number of people we look for
     
     #print(list_o_links)
     good_candidates = []
@@ -172,7 +173,10 @@ def scrape_and_save(page,bad_words,my_data):
                        counter += 1
                        #if counter == 5:
                            #break
-    
+
+                dead_people_found += 1
+                if dead_people_found == dead_person_cap:
+                    break
     
     
     #alright looks like we're going to have a lot less cleaning to do this time around.  
@@ -219,9 +223,6 @@ def scrape_and_save(page,bad_words,my_data):
     print(after_birthday / total_count)
     return my_data
 
-
-
-
 pages = ["List of Members Baseball Hall of Fame",
          "List of Members Hockey Hall of Fame",
          "List of Members Football Hall of Fame",
@@ -230,15 +231,15 @@ pages = ["List of Members Baseball Hall of Fame",
 headers = ['Name','Birth Month','Birth Day','Birth Year','Death Month','Death Day','Death Year','BirthDeathBool','Age','BirthdayDeath']
 
 
-bad_words = ["Chicago","AFL","AFC","National","American","Academy"]
+bad_words = ["Chicago","AFL","AFC","National","American","Academy"]\
 
 #Weird note: When you loop through page values, if you don't do "pages[3:]"
 #Or something that results in a vector, it will run but with like weird meta links
 
 #Still need to figure out how to save all this data
 my_data  = pd.DataFrame(columns=headers)
-for page in pages[3:]:
-    my_data = scrape_and_save(page,bad_words,my_data)
+for page in pages[:1]:
+    my_data = scrape_and_save(page,bad_words,my_data,5)
 
 
 #I think it's also kinda fun to see who died before their birthday earliest in the year
@@ -254,13 +255,4 @@ my_data['birthday_death_year']  = np.vectorize(lambda x,y,z: datetime.date(month
 
 my_data['delta'] = my_data['deathdate'] - my_data['birthday_death_year']
 
-
-
-
-
-
-
-
-
-
-
+print(my_data)
