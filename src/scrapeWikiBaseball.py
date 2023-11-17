@@ -62,6 +62,42 @@ def get_names_from_links(list_o_links: list[str], bad_words: set[str]) -> Iterab
         
         yield i
 
+def get_names_from_links_test(list_o_links: list[str], bad_words: set[str]) -> Iterable[str]:
+
+    #here's some initial cleaning to trim down the list of names
+    for i in list_o_links:
+        if i[0].isnumeric():
+            continue
+        
+        #a ton of stuff begins with a single character.  These cant be names
+        if i[1] == " ":
+            continue
+
+        if "(" in i:
+            continue
+        
+        current_index = 0
+        space_count = 0
+        bad_word = False
+        
+        for letter in i:
+            if letter == ' ':
+                space_count += 1
+                if space_count == 1:
+                    word = i[0: current_index]
+                    if word in bad_words:
+                        bad_word = True
+
+            current_index += 1
+
+        if bad_word:
+            continue
+
+        if space_count > 2 or space_count == 0:
+            continue
+        
+        yield i
+
 
 ## For my own curiousity testing the speed of the get links if I call a function every iteration
 

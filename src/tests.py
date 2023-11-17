@@ -1,7 +1,7 @@
 import timeit
 import unittest
 
-from src.scrapeWikiBaseball import ValidateNames, get_links, get_names_from_links, get_names_from_links_test_function
+from src.scrapeWikiBaseball import ValidateNames, get_links, get_names_from_links, get_names_from_links_test, get_names_from_links_test_function
 
 class ScrapeTest(unittest.TestCase):
 
@@ -21,21 +21,25 @@ class FunctionSpeedTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.bad_words = set(["Chicago","AFL","AFC","National","American","Academy"])
-        cls.names = get_test_names(10000)
+        cls.names = get_test_names(1000)
         print(f'{len(cls.names):,} names')
 
     def test_parse_names_no_function(self):
         run_time = timeit.timeit(lambda: list(get_names_from_links(self.names, self.bad_words)), number=5)
         print(f'No Function run time: {run_time} seconds')
 
-    def test_parse_names_function(self):
-        run_time = timeit.timeit(lambda: list(get_names_from_links_test_function(self.names, self.bad_words)), number=1)
-        print(f'With Function run time: {run_time} seconds')
+    # def test_parse_names_function(self):
+    #     run_time = timeit.timeit(lambda: list(get_names_from_links_test_function(self.names, self.bad_words)), number=1)
+    #     print(f'With Function run time: {run_time} seconds')
 
-    def test_parse_names_class(self):
-        v = ValidateNames(self.bad_words)
-        run_time = timeit.timeit(lambda: list(v.get_names(self.names)), number=1)
-        print(f'With Class run time: {run_time} seconds')
+    # def test_parse_names_class(self):
+    #     v = ValidateNames(self.bad_words)
+    #     run_time = timeit.timeit(lambda: list(v.get_names(self.names)), number=1)
+    #     print(f'With Class run time: {run_time} seconds')
+
+    def test_get_names_from_links_test(self):
+        run_time = timeit.timeit(lambda: list(get_names_from_links_test(self.names, self.bad_words)), number=5)
+        print(f'No split func run time: {run_time} seconds')
         
 
 def get_test_names(multiply_count: int = None) -> list[str]:
