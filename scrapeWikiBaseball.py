@@ -17,6 +17,7 @@ import re
 import pandas as pd
 import datetime
 import numpy as np
+import postgresql_db_interface as db
 
 months = ['zero','January','February','March',
           'April','May','June','July','August',
@@ -215,7 +216,7 @@ def scrape_and_save(page,bad_words,my_data,dead_person_cap =-1):
             row['Age'] = (row['Death Year']-row['Birth Year'])
         else:
             row['Age'] = (row['Death Year']-row['Birth Year']-1)
-    print(after_birthday / total_count)
+    #print(after_birthday / total_count)
     return my_data
 
 pages = ["List of Members Baseball Hall of Fame",
@@ -224,8 +225,6 @@ pages = ["List of Members Baseball Hall of Fame",
          "List of People with the Most Children"]
 
 headers = ['Name','Birth Month','Birth Day','Birth Year','Death Month','Death Day','Death Year','BirthDeathBool','Age','BirthdayDeath']
-
-
 bad_words = ["Chicago","AFL","AFC","National","American","Academy"]\
 
 #Weird note: When you loop through page values, if you don't do "pages[3:]"
@@ -234,20 +233,14 @@ bad_words = ["Chicago","AFL","AFC","National","American","Academy"]\
 #Still need to figure out how to save all this data
 my_data  = pd.DataFrame(columns=headers)
 for page in pages[:1]:
-    my_data = scrape_and_save(page,bad_words,my_data,5)
+    my_data = scrape_and_save(page,bad_words,my_data,1)
 
 
 #I think it's also kinda fun to see who died before their birthday earliest in the year
-#and who lived past it latest in the year.  
+#and who lived past it latest in the year. We'll calculate the "delta" i.e. how close
+#people died to their birthday
+my_data['delta_days'] = np.vectorize(lambda a,b,c,x,y,z: (datetime.date(month=a,day=b,year=c) - datetime.date(month=x,day=y,year=z)).days)(my_data['Death Month'],my_data['Death Day'],my_data['Death Year'],my_data['Birth Month'],my_data['Birth Day'],my_data['Death Year'])
 
 
-#We'll calculate the "delta" i.e. how close people died to their birthday
-
-#This vectorize function seems worth learning better.  
-my_data['birthdate'] = np.vectorize(lambda x,y,z: datetime.date(month=x,day=y,year=z))(my_data['Birth Month'],my_data['Birth Day'],my_data['Birth Year'])
-my_data['deathdate'] = np.vectorize(lambda x,y,z: datetime.date(month=x,day=y,year=z))(my_data['Death Month'],my_data['Death Day'],my_data['Death Year'])
-my_data['birthday_death_year']  = np.vectorize(lambda x,y,z: datetime.date(month=x,day=y,year=z))(my_data['Birth Month'],my_data['Birth Day'],my_data['Death Year'])
-
-my_data['delta'] = my_data['deathdate'] - my_data['birthday_death_year']
-
-print(my_data)
+#add the scrapped data to the database
+#db.add_data_frame_to_table(my_data, "players")
