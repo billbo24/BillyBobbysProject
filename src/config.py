@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-load_dotenv('.env')
+load_dotenv('/Users/williamfloyd/Documents/PythonCode/BillyBobbysProject/env')
 
 def get_billy_bobbys_db_cred() -> dict[str]:
     # Gets credentials for Postgress DB

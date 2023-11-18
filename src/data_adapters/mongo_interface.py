@@ -6,7 +6,9 @@ print(client.list_database_names())
 
 def test_insert_data(client: MongoClient):
 
-    db = client['beb_database']
+
+    #Beb needs to learn how to comment
+    db = client['beb_database'] #Creates database, or accesses it if it exists
     # col = db.create_collection('first_test')
     col = db['first_test']
 
