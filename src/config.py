@@ -13,3 +13,6 @@ def get_billy_bobbys_db_cred() -> dict[str]:
     port = os.environ['billybobbys_port']
 
     return dict(dbname=dbname, user=user, password=password, host=host, port=port)
+
+def get_mongo_host() -> str:
+    return os.environ['mongodb_host']
