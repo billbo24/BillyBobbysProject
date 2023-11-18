@@ -1,6 +1,4 @@
-import ssl
 from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
 from src.config import get_mongo_host
 
 client = MongoClient(get_mongo_host())
