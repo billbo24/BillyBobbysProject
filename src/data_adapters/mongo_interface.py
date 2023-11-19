@@ -1,8 +1,8 @@
 from pymongo.mongo_client import MongoClient
 from src.config import get_mongo_host
 
-client = MongoClient(get_mongo_host())
-print(client.list_database_names())
+def get_default_mongo_client() -> MongoClient:
+    return MongoClient(get_mongo_host())
 
 def test_insert_data(client: MongoClient):
 
