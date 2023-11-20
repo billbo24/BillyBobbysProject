@@ -115,7 +115,10 @@ a = my_data.to_json(orient='records')
 #This puts it in perfect format to load into mongo
 b = json.loads(a) 
 
+c = func.prepare_pandas_for_mongo(my_data)
+
 #col.insert_many(b)
+
 
 #Now I think I can delete documents like so:
 #Yes this worked! The inside bit is the filtering    
