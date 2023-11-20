@@ -5,9 +5,6 @@ Created on Sun Nov 19 20:23:03 2023
 
 @author: williamfloyd
 """
-import sys
-# putting in the path for the src folder.  I think this lets us import the other stuff
-sys.path.insert(0, '/Users/williamfloyd/Documents/PythonCode/BillyBobbysProject/')
 
 import tkinter as tk
 from tkinter import messagebox
@@ -17,8 +14,8 @@ from dotenv import load_dotenv
 
 #Had the full filepath on my machine, but that's not helpful for everyone else.  
 #Replace the .env string here
-load_dotenv('/Users/williamfloyd/Documents/PythonCode/BillyBobbysProject/env')
 
+load_dotenv('env')
 MongoClient(get_mongo_host())
 
 class DataApp(tk.Tk):
