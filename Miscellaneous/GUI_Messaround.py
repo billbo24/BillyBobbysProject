@@ -79,6 +79,10 @@ class AdditionFrame(tk.Frame):
         except ValueError:
             messagebox.showerror("Error", "Invalid input. Please enter valid numbers.")
 
+
+
+
+
 class MultiplicationFrame(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
