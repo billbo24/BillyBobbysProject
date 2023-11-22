@@ -7,10 +7,14 @@ Created on Mon Nov 20 22:57:12 2023
 """
 
 import tkinter as tk
-from tkinter import ttk  # Import themed Tkinter
+from tkinter import ttk
+
+from pymongo import MongoClient
+
+from src.GUI.widgets import DatabaseLabel  # Import themed Tkinter
 
 class CollectionsFrame(tk.Frame):
-    def __init__(self, parent,send_back_function,client,database):
+    def __init__(self, parent,send_back_function,client: MongoClient, database):
         super().__init__(parent)
         
         #Note at this point we can only be here if we're connected, so we may as well
@@ -20,6 +24,7 @@ class CollectionsFrame(tk.Frame):
         label = tk.Label(self, text=f"The {database} database", font=("Helvetica", 16))
         label.pack(pady=10)
         
+        self.database = database
         
         #view_databases = ttk.Button(self, text="View Databases", command=self.print_database)
         #view_databases.pack(pady=10)
@@ -38,16 +43,24 @@ class CollectionsFrame(tk.Frame):
         except:
             self.my_variable.set("Something has gone very wrong")
         
-        self.label = tk.Label(self, textvariable=self.my_variable)
-        self.label.pack(pady=10)
-
+        # self.label = tk.Label(self, textvariable=self.my_variable)
+        # self.label.pack(pady=10)
 
         # add_button = ttk.Button(self, text="Add", command=self.perform_addition)
         # add_button.pack(pady=10)
 
         GO_BACK = ttk.Button(self, text="Go Back", command=send_back_function)
         GO_BACK.pack(pady=10)
+     
+    def print_collections(self):
         
+        collections = self.client[f'{self.database}'].list_collection_names()
+        #a = self.pretty_up_database_names(b)
+
+        for collection in collections:
+            col = DatabaseLabel(self, collection, None)#, self.on_label_click)
+            col.pack(pady=5)
+        # self.my_variable.set(a)
   
     def pretty_up_collections_names(self,database):
         names = self.client[f'{database}'].list_collection_names()

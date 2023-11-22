@@ -80,9 +80,6 @@ class AdditionFrame(tk.Frame):
             messagebox.showerror("Error", "Invalid input. Please enter valid numbers.")
 
 
-
-
-
 class MultiplicationFrame(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
@@ -111,27 +108,3 @@ class MultiplicationFrame(tk.Frame):
 if __name__ == "__main__":
     app = MathApp()
     app.mainloop()
-
-
-
-
-
-
-
-
-
-
-class Base(object):
-    def __init__(self):
-        print("Base created")
-        
-class ChildA(Base):
-    def __init__(self):
-        Base.__init__(self)
-        
-class ChildB(Base):
-    def __init__(self):
-        super(ChildB, self).__init__()
-        
-ChildA() 
-ChildB()

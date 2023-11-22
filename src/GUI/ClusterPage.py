@@ -8,7 +8,8 @@ Created on Mon Nov 20 22:12:36 2023
 
 
 import tkinter as tk
-from tkinter import ttk  # Import themed Tkinter
+from tkinter import ttk
+from src.GUI.widgets import DatabaseLabel  # Import themed Tkinter
 from src.GUI.CollectionsPage import CollectionsFrame
 
 
@@ -42,10 +43,10 @@ class ClusterFrame(tk.Frame):
         
         b = self.client.list_database_names()
         #a = self.pretty_up_database_names(b)
-        
 
         for db in b:
-            DatabaseLabel(self, db, self.on_label_click)
+            dl = DatabaseLabel(self, db, self.on_label_click)
+            dl.pack(pady=5)
         # self.my_variable.set(a)
 
     
@@ -56,22 +57,9 @@ class ClusterFrame(tk.Frame):
         
 
 
-
-# I started with buttons but I think I like this more
-class DatabaseLabel(tk.Label):
-    def __init__(self, parent, label_text, label_click):
-        super().__init__(parent, text=label_text, foreground="white", background="red",cursor="hand2")
-        self.pack(pady=5)
-        
-        #Alright, this is a bit confusing but this is how
-        #You tell it to do something when you click on it
-        self.bind("<Button-1>", lambda event: label_click(label_text))
-        self.bind("<Enter>", lambda event: self.config(background="blue"))
-        self.bind("<Leave>", lambda event: self.config(background="red"))
         
         
-style = ttk.Style()
-style.configure('TButton', padding=6, relief="flat")  # You can adjust padding and relief      
+ # You can adjust padding and relief      
         
         
         

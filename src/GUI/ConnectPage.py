@@ -33,8 +33,6 @@ class ConnectFrame(tk.Frame):
         #Create a mongo client
         self.client = MongoClient(get_mongo_host())
         self.databases = self.client.list_database_names()
-        
-        
     
         #not 100% sure but I think this can work as a connection check
         #It checks if it's connected to a server that can accept writes??
