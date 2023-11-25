@@ -11,6 +11,8 @@ A collection of functions that will interface with the data.
 
 import json
 import pandas as pd
+import copy
+import time
 
 def prepare_pandas_for_mongo(input_pandas): 
     #We can alter the orient argument if we like, but generally this is 
@@ -66,11 +68,23 @@ NEW_DATA ={
 }
 
 
+def check_for_dict(json_data): #Not exactly sure how this will work with many rows, i.e. if one row has a dictionary and another doesnt
+    for value in json_data.values():
+        if isinstance(value,dict):
+            return True
+    return False
+
+
+def check_for_list(json_data): #Basically the same as above
+    for value in json_data.values():
+        if isinstance(value,list):
+            return True
+    return False
 
 #Alright found this online.  It completely flattens a JSON object.  Not exactly what I want, but it's a valid option
 #I'd like to modify this to split dictionaries across columns and arrays across rows.  Note this works with dictionaries.
 #Leaving the bit that flattens arrays commented out so I can make my own method that splits them into rows
-def flatten_json(nested_json, exclude=['']):
+def flatten_dict(nested_json, exclude=['']):
     """Flatten json object with nested keys into a single level.
         Args:
             nested_json: A nested json object.
@@ -85,12 +99,33 @@ def flatten_json(nested_json, exclude=['']):
             for a in x:
                 if a not in exclude: flatten(x[a], name + a + '_')
         
-        #Commenting this out for now.  Want to leave the arrays unsplit
-        #elif type(x) is list:
-            #i = 0
-            #for a in x:
-                #flatten(a, name + str(i) + '_')
-                #i += 1 
+        else:
+            out[name[:-1]] = x
+
+    flatten(nested_json) #Recursive call
+    return out
+
+
+def completely_flatten(nested_json):
+    """Flatten json object with nested keys into a single level.
+        Args:
+            nested_json: A nested json object.
+            exclude: Keys to exclude from output.
+        Returns:
+            The flattened json object if successful, None otherwise.
+    """
+    out = {}
+
+    def flatten(x, name=''):
+        if type(x) is dict: #Splits the dictionaries
+            for a in x:
+                flatten(x[a], name + a + '_')
+        
+        elif type(x) is list: #Splits the lists horizontally, not vertically
+            i = 0
+            for a in x:
+                flatten(a, name + str(i) + '_')
+                i += 1 
         else:
             out[name[:-1]] = x
 
@@ -127,25 +162,59 @@ def split_rows(nested_json):
     return nested_json #this means there were no arrays
 
 
-#Now all we really need is a subroutine that goes "okay"
-#Take the data, split dictionaries, then look for arrays and split those.  I believe any new arrays will also get split
-#Then look at the results for new dictionaries or new
+#I think I'd like to make a 
+#Items need to be in an array
+def flat_split(json_data):
 
-#egg = pd.json_normalize(NEW_DATA)
+    #I'm checking if it's a list before passing it, but I'll leave this here for reference
+    #Quick check to make sure the items are in a list
+    #if isinstance(json_data,dict):
+        #ans = copy.deepcopy([json_data])
+    #else:
+        #ans = copy.deepcopy(json_data)
 
-#egg_list = has_list(egg)
+    ans = copy.deepcopy(json_data)
+    not_done = True
+    
+    while not_done:
+        #Alright gonna be pretty simple: Just look if there are dictionaries and arrays lol.  IF yes, keep going
+        if check_for_dict(ans[0]):
+            #This means we have dictionaries
+            ans = [flatten_dict(row) for row in ans]
 
-#print(egg)
-#print(egg_list)
+        elif check_for_list(ans[0]):
+            #This means we have lists
+            ans = split_rows(ans)
+
+        else:
+            not_done = False
+    
+    return ans
 
 
-banana = flatten_json(NEW_DATA)
-#banana = pd.DataFrame([flatten_json(NEW_DATA)])
-#print(banana)
+#Allow the person to completely flatten or explode lists.  Explode lists is default
+def flatten_JSON(json_data,lists_sep_rows = True):
+    #Quick check to make sure the items are in a list
+    if isinstance(json_data,dict):
+        temp_json = copy.deepcopy([json_data])
+        
+    else:
+        temp_json = copy.deepcopy(json_data)
+    
+    #If we want a completely flat dataset, we do this
+    if lists_sep_rows == False:
+        ans = [completely_flatten(row) for row in temp_json]
+        return ans
+    
+    ans = flat_split(temp_json)
+    return ans
 
-tomato = split_rows([banana])
-print(tomato)
 
-output = pd.DataFrame(tomato)
+
+#test1 = flatten_JSON(NEW_DATA)
+
+
+#test1 = pd.DataFrame(test1)
+
 # Write the DataFrame to a CSV file
-output.to_csv('check.csv', index=False)
+#test1.to_csv('test1.csv', index=False)
