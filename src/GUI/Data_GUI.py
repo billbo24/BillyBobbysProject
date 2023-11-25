@@ -12,8 +12,8 @@ Gonna put the "clickable object" in the Cluster Page since that's where I plan o
 using it
 """
 
-# import sys
-# sys.path.insert(0, '/Users/williamfloyd/Documents/PythonCode/BillyBobbysProject/')
+import sys
+#sys.path.insert(0, '/Users/williamfloyd/Documents/PythonCode/BillyBobbysProject/')
 
 import os
 from tkinter import ttk
@@ -32,10 +32,10 @@ from dotenv import load_dotenv
 #Had the full filepath on my machine, but that's not helpful for everyone else.  
 #Replace the .env string here
 
-#load_dotenv('env')
+load_dotenv('env')
 
-print(__file__)
-load_dotenv('/Users/williamfloyd/Documents/PythonCode/BillyBobbysProject/env')
+
+#load_dotenv('/Users/williamfloyd/Documents/PythonCode/BillyBobbysProject/env')
 
 MongoClient(get_mongo_host())
 
@@ -57,7 +57,7 @@ class DataApp(tk.Tk):
         self.cluster_frame = ClusterFrame(self,self.show_collection,self)
         
         #The collections frame needs to come with a few other things
-        self.collections_frame= CollectionsFrame(self,self.show_cluster,None,None)
+        self.collections_frame = CollectionsFrame(self,self.show_cluster,None,None)
         
         #if self.connect_frame.is_connected:
             #self.show_cluster

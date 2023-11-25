@@ -78,9 +78,16 @@ for i in range(len(names)):
 
 my_collection = json.dumps(billy_collection)
    
+#This lists the databases
+dbs = client.list_database_names()
 
-#Now I'd like to create my own table
-db = client.beb_database
+
+#Now I'd like to create my own table, this sets our database
+db = client['beb_database']
+
+#This is how you list the collections within a database
+cols = db.list_collection_names()
+
 
 #Apparently it's like a dictionary.  You just kinda...do it lol
 col = db['Billy_Data']
@@ -91,10 +98,14 @@ col = db['Billy_Data']
 #Note that I believe it has to be a vector of dictionaries.  
 #col.insert_many(billy_collection)
 
-#Now that we have our collection, we can "pull it" and loop through the elements likes o
-for i in col.find():
-    #Now we can see 
-    print(i)
+#This is an example of what a query looks like
+query = {}
+
+#You can leave the parentheses blank or put {} as a "find all" 
+cursor = col.find(query)  # You can add a query parameter if needed
+data = list(cursor)
+df = pd.DataFrame(data)
+df_expand = df.explode('Languages_Spoken')
 
 
 
@@ -122,5 +133,37 @@ c = func.prepare_pandas_for_mongo(my_data)
 
 #Now I think I can delete documents like so:
 #Yes this worked! The inside bit is the filtering    
-#col.delete_many({ 'student number': { "$gt": 0 }})
+#col.delete_one({ 'student number': { "$eq": 0 }})
 
+
+
+
+def flatten_array(df):
+    # Identify columns with arrays
+    array_columns = df.applymap(lambda x: isinstance(x, list)).any()
+    
+    # Create a list of columns with arrays
+    array_columns_list = array_columns[array_columns].index.tolist()
+    
+    print(array_columns_list)
+
+
+
+
+col = db['Billy_Data']
+
+
+
+#Now we can insert many objects at once using dfthe insert_many function
+#Note that I believe it has to be a vector of dictionaries.  
+#col.insert_many(billy_collection)
+
+#This is an example of what a query looks like
+query = {}
+
+#You can leave the parentheses blank or put {} as a "find all" 
+cursor = col.find(query)  # You can add a query parameter if needed
+data = list(cursor)
+df = pd.DataFrame(data)
+
+flatten_array(df)

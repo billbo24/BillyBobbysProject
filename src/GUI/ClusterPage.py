@@ -58,9 +58,7 @@ class ClusterFrame(tk.Frame):
 
 
         
-        
- # You can adjust padding and relief      
-        
+
         
         
         
